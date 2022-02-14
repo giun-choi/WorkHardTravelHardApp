@@ -16,24 +16,34 @@ import { Fontisto } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { theme } from "./colors";
 
-const STORAGE_KEY = "@toDos";
+const STORAGE_TODOS_KEY = "@toDos";
+const STORAGE_WORKING_KEY = "@working";
 
 export default function App() {
   const [working, setWorking] = useState(true);
   const [text, setText] = useState("");
   const [toDos, setToDos] = useState({});
   useEffect(() => {
+    loadWorking();
     loadToDos();
   }, []);
-  const travel = () => setWorking(false);
-  const work = () => setWorking(true);
   const onChangeText = (payload) => setText(payload);
-  const saveToDos = async (toSave) => {
-    await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(toSave));
+  const saveToDos = async (toSaveTodos) => {
+    await AsyncStorage.setItem(STORAGE_TODOS_KEY, JSON.stringify(toSaveTodos));
+  };
+  const saveWorking = async (toSaveWorking) => {
+    await AsyncStorage.setItem(
+      STORAGE_WORKING_KEY,
+      JSON.stringify(toSaveWorking)
+    );
   };
   const loadToDos = async () => {
-    const s = await AsyncStorage.getItem(STORAGE_KEY);
+    const s = await AsyncStorage.getItem(STORAGE_TODOS_KEY);
     setToDos(JSON.parse(s));
+  };
+  const loadWorking = async () => {
+    const w = await AsyncStorage.getItem(STORAGE_WORKING_KEY);
+    setWorking(JSON.parse(w));
   };
   const addToDo = async () => {
     if (text === "") {
@@ -43,8 +53,8 @@ export default function App() {
       ...toDos,
       [Date.now()]: { text, working: working },
     };
-    setToDos(newToDos);
     await saveToDos(newToDos);
+    setToDos(newToDos);
     setText("");
   };
   const deleteToDo = (key) => {
@@ -63,18 +73,22 @@ export default function App() {
     ]);
     return;
   };
+  const addWorking = async () => {
+    await saveWorking(!working);
+    setWorking(!working);
+  };
   return (
     <View style={styles.container}>
       <StatusBar style="auto" />
       <View style={styles.header}>
-        <TouchableOpacity onPress={work}>
+        <TouchableOpacity onPress={addWorking}>
           <Text
             style={{ ...styles.btnText, color: working ? "white" : theme.grey }}
           >
             Work
           </Text>
         </TouchableOpacity>
-        <TouchableOpacity onPress={travel}>
+        <TouchableOpacity onPress={addWorking}>
           <Text
             style={{
               ...styles.btnText,
