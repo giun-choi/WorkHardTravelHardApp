@@ -38,13 +38,6 @@ export default function App() {
       JSON.stringify(toSaveWorking)
     );
   };
-  console.log(toDos);
-  // const saveFinished = async (toSaveFinished) => {
-  //   await AsyncStorage.setItem(
-  //     STORAGE_FINISHED_KEY,
-  //     JSON.stringify(toSaveFinished)
-  //   );
-  // };
   const loadToDos = async () => {
     const s = await AsyncStorage.getItem(STORAGE_TODOS_KEY);
     setToDos(JSON.parse(s));
